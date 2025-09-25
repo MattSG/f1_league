@@ -7,6 +7,9 @@
   --tyre-rim: #1a1a1a;
 }
 
+/* Prefer emoji-capable fonts so flags render consistently */
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif; }
+
 /* Accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -16,4 +19,3 @@
     scroll-behavior: auto !important;
   }
 }
-

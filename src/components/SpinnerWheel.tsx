@@ -1,4 +1,5 @@
 import React, { useEffect, useImperativeHandle, useMemo, useRef, useState, forwardRef } from 'react'
+import { labelToFlag } from '../lib/constants'
 import { easeOutCubic } from '../lib/easing'
 
 type Segment = { id: string; label: string }
@@ -28,6 +29,17 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
   const segmentOffset = segmentAngle / 2
 
   const pointer = useMemo(() => ({ x: 0, y: -1 }), [])
+
+  // Compute which segment is currently under the fixed pointer (top)
+  const activeIndex = useMemo(() => {
+    if (!n) return 0
+    let r = rotation % 360
+    if (r < 0) r += 360
+    const thetaNow = 360 - r
+    let idx = Math.round((thetaNow - segmentOffset) / segmentAngle)
+    idx = ((idx % n) + n) % n
+    return idx
+  }, [rotation, n, segmentAngle, segmentOffset])
 
   useImperativeHandle(ref, () => ({
     spinTo: (index, opts) => {
@@ -67,21 +79,24 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
     })
   }
 
-  const size = 740
+  const size = 765
   const cx = size / 2
   const cy = size / 2
-  const radiusOuter = 290
-  const radiusBand = 250
-  const rWedgeOuter = 230
-  const rWedgeInner = 120
+  const radiusOuter = Math.round(size * 0.46)
+  const radiusBand = Math.round(size * 0.40)
+  const rWedgeOuter = Math.round(size * 0.37)
+  const rWedgeInner = Math.round(size * 0.18)
 
   return (
-    <div className="relative" style={{ width: 'min(92vw, 740px)', height: 'min(92vw, 740px)' }}>
+    <div className="relative" style={{ width: 'min(96vw, 765px)', height: 'min(96vw, 765px)' }}>
+      <style>{`
+        @keyframes pulseHalo { 0%{opacity:.14} 50%{opacity:.38} 100%{opacity:.14} }
+      `}</style>
       {/* fixed pointer */}
-      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 z-10" aria-hidden>
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-          <path d="M13 26 L26 0 L0 0 Z" fill="#ffdf00" />
-          <path d="M13 23 L23 1 L3 1 Z" fill="#e10600" />
+      <div className="absolute left-1/2 top-0 -translate-x-1/2 translate-y-2 z-20 pointer-events-none" aria-hidden>
+        <svg width="22" height="32" viewBox="0 0 22 32" fill="none">
+          <path d="M11 32 L22 0 L0 0 Z" fill="#ffdf00" />
+          <path d="M11 29 L20 1.5 L2 1.5 Z" fill="#e10600" />
         </svg>
       </div>
       <svg width="100%" height="100%" viewBox={`0 0 ${size} ${size}`} role="img" aria-label="Spinning wheel">
@@ -112,6 +127,13 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
             <stop offset="60%" stopColor="#1e1e1e" />
             <stop offset="100%" stopColor="#141414" />
           </radialGradient>
+          <filter id="glow-yellow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
         {/* spinning group */}
         <g transform={`rotate(${rotation} ${cx} ${cy})`}>
@@ -127,7 +149,7 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
 
           {/* Band branding: alternate PIRELLI and P ZERO around the ring */}
           {new Array(8).fill(0).map((_, i) => (
-            <g key={i} transform={`rotate(${i * 60} ${cx} ${cy})`}>
+            <g key={i} transform={`rotate(${i * 45} ${cx} ${cy})`}>
               <text x={cx} y={cy - radiusBand + 8} textAnchor="middle" fontSize={18} fill="#ffdf00" fontWeight={700}>
                 {i % 2 === 0 ? 'P ZERO' : 'PIRELLI'}
               </text>
@@ -135,11 +157,11 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
           ))}
 
           {/* Rim with subtle spokes */}
-          <circle cx={cx} cy={cy} r={90} fill="url(#rimShade)" />
+          <circle cx={cx} cy={cy} r={Math.round(size * 0.12)} fill="url(#rimShade)" />
           {new Array(10).fill(0).map((_, i) => {
             const a = i * 36
-            const inner = polarToCartesian(cx, cy, 50, a)
-            const outer = polarToCartesian(cx, cy, 90, a)
+            const inner = polarToCartesian(cx, cy, Math.round(size * 0.068), a)
+            const outer = polarToCartesian(cx, cy, Math.round(size * 0.12), a)
             return (
               <line key={i} x1={inner.x} y1={inner.y} x2={outer.x} y2={outer.y} stroke="#0c0c0c" strokeOpacity={0.5} strokeWidth={2} />
             )
@@ -152,13 +174,18 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
             const largeArc = segmentAngle > 180 ? 1 : 0
             const path = describeWedge(cx, cy, rWedgeOuter, rWedgeInner, a0, a1)
             const selected = s.id === selectedId
+            const selectedFinal = !spinning && selected
             const fill = selected ? '#242424' : i % 2 === 0 ? '#141414' : '#1b1b1b'
-            const maxChars = n > 18 ? 12 : 14
-            const lines = wrapLabel(s.label, maxChars)
-            let baseSize = 16
-            if (n > 18) baseSize = 14
-            if (n > 22) baseSize = 12
-            const fontSize = lines.length === 1 ? baseSize : lines.length === 2 ? baseSize - 1 : baseSize - 3
+            const fullForFlag = (s as any).fullLabel ?? s.label
+            const flag = labelToFlag(fullForFlag)
+            const maxChars = n > 18 ? 10 : 12
+            const nameLines = wrapLabel(s.label, maxChars)
+            const lines = flag ? [flag, ...nameLines] : nameLines
+            let baseSize = 18
+            if (n > 18) baseSize = 16
+            if (n > 22) baseSize = 14
+            let fontSize = lines.length === 1 ? baseSize : lines.length === 2 ? baseSize - 1 : baseSize - 3
+            if (selectedFinal) fontSize += 1
             const labelRadius = rWedgeInner + (rWedgeOuter - rWedgeInner) * 0.60
             const pos = polarToCartesian(cx, cy, labelRadius, mid)
             // Orientation along tangent with upright correction (rotate around label position)
@@ -166,9 +193,34 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
             if (orient > 90 && orient < 270) orient -= 180
             const lineGap = fontSize + 2
             const startOffset = -((lines.length - 1) * lineGap) / 2
+            // Pulse overlay geometry, clamped; clipPath confines any blur within wedge ring
+            const pulseOuter = Math.min(rWedgeOuter + Math.round(size * 0.012), radiusBand - 8)
+            const pulseInner = Math.max(rWedgeInner - Math.round(size * 0.012), 10)
+            const pulsePath = describeWedge(cx, cy, pulseOuter, pulseInner, a0, a1)
+            const clipId = `wedge-clip-${i}`
             return (
               <g key={s.id}>
+                <defs>
+                  <clipPath id={clipId}>
+                    <path d={describeWedge(cx, cy, rWedgeOuter, rWedgeInner, a0, a1)} />
+                  </clipPath>
+                </defs>
+                {/* base wedge */}
                 <path d={path} fill={fill} stroke="#000" strokeOpacity={0.35} />
+                {/* highlight when under pointer during spin */}
+                {spinning && i === activeIndex && (
+                  <g clipPath={`url(#${clipId})`}>
+                    <path d={path} fill="#ffdf00" opacity={0.15} filter="url(#glow-yellow)" />
+                    <path d={path} fill="none" stroke="#ffdf00" strokeOpacity={0.5} strokeWidth={2} />
+                  </g>
+                )}
+                {/* post-selection pulse and slight size accent */}
+                {selectedFinal && (
+                  <g clipPath={`url(#${clipId})`}>
+                    <path d={pulsePath} fill="#ffdf00" opacity={0.12} filter="url(#glow-yellow)" style={{ animation: 'pulseHalo 1300ms ease-in-out infinite' }} />
+                    <path d={pulsePath} fill="none" stroke="#ffdf00" strokeOpacity={0.45} strokeWidth={2} style={{ animation: 'pulseHalo 1300ms ease-in-out infinite' }} />
+                  </g>
+                )}
                 {/* label aligned and rotated around its own anchor point */}
                 <g transform={`rotate(${orient} ${pos.x} ${pos.y})`}>
                   <text
@@ -192,9 +244,9 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
           })}
 
           {/* Center hub + lug nuts */}
-          <circle cx={cx} cy={cy} r={20} fill="#2b2b2b" stroke="#444" />
+          <circle cx={cx} cy={cy} r={Math.round(size * 0.027)} fill="#2b2b2b" stroke="#444" />
           {new Array(5).fill(0).map((_, i) => {
-            const p = polarToCartesian(cx, cy, 14, i * (360 / 5))
+            const p = polarToCartesian(cx, cy, Math.round(size * 0.019), i * (360 / 5))
             return <circle key={i} cx={p.x} cy={p.y} r={2.5} fill="#666" stroke="#999" />
           })}
         </g>
