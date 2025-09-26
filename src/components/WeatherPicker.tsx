@@ -1,63 +1,80 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { WEATHER } from '../lib/constants'
-import { pickRandom, shuffle } from '../lib/random'
+import { shuffle } from '../lib/random'
 import TyreReel, { TyreReelHandle } from './TyreReel'
 
 type Result = { name: string; color: string } | null
 
+const WHEEL_COUNT = 3 as const
+const SPIN_DELAYS = [0, 360, 720]
+
 export default function WeatherPicker() {
-  const [results, setResults] = useState<Result[]>([null, null, null])
+  const [results, setResults] = useState<Result[]>(Array(WHEEL_COUNT).fill(null))
   const leftRef = useRef<TyreReelHandle>(null)
   const midRef = useRef<TyreReelHandle>(null)
   const rightRef = useRef<TyreReelHandle>(null)
-  // Use a shuffle bag to reduce streakiness and perceived bias while keeping equal probabilities
-  const bagRef = useRef<number[]>([])
+  const reelRefs = [leftRef, midRef, rightRef]
 
   async function start() {
-    setResults([null, null, null])
-    const r1 = WEATHER[drawFromBag()]
-    const r2 = WEATHER[drawFromBag()]
-    const r3 = WEATHER[drawFromBag()]
+    setResults(Array(WHEEL_COUNT).fill(null))
+    const picks = buildWeatherSet()
 
-    const p1 = leftRef.current?.spinTo(r1, { startDelayMs: 0, durationMs: rand(1800, 2300) })
-      ?.then(() => setResults((prev) => [r1, prev[1], prev[2]]))
-    const p2 = midRef.current?.spinTo(r2, { startDelayMs: 360, durationMs: rand(2400, 3000) })
-      ?.then(() => setResults((prev) => [prev[0], r2, prev[2]]))
-    const p3 = rightRef.current?.spinTo(r3, { startDelayMs: 720, durationMs: rand(3000, 3600) })
-      ?.then(() => setResults((prev) => [prev[0], prev[1], r3]))
+    const spins = picks.map((weather, index) => {
+      const ref = reelRefs[index].current
+      const duration = rand(1800 + index * 400, 2400 + index * 400)
+      return ref
+        ?.spinTo(weather, { startDelayMs: SPIN_DELAYS[index] ?? index * 360, durationMs: duration })
+        ?.then(() =>
+          setResults((prev) => {
+            const next = [...prev]
+            next[index] = weather
+            return next
+          }),
+        )
+    })
 
-    await Promise.all([p1, p2, p3].filter(Boolean) as Promise<void>[])
+    await Promise.all(spins.filter(Boolean) as Promise<void>[])
+  }
+
+  function buildWeatherSet() {
+    const dry = WEATHER.find((w) => w.name === 'Dry')!
+    const wetPool = WEATHER.filter((w) => w.name !== 'Dry')
+    const picks = [dry, pickOne(wetPool), pickOne(WEATHER)]
+    return shuffle(picks)
+  }
+
+  function pickOne<T>(list: readonly T[]): T {
+    return list[Math.floor(Math.random() * list.length)]
   }
 
   function rand(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1)) + min
   }
 
-  function refillBag(copies = 6) {
-    const idxs: number[] = []
-    for (let c = 0; c < copies; c++) {
-      for (let i = 0; i < WEATHER.length; i++) idxs.push(i)
+  const quote = useMemo(() => {
+    if (!results.every(Boolean)) {
+      return 'Jeff: "We’ll see what we get. Keep the engine running."'
     }
-    bagRef.current = shuffle(idxs)
-  }
-
-  function drawFromBag(): number {
-    if (bagRef.current.length < 3) refillBag(6)
-    // Pop from the end for O(1)
-    const idx = bagRef.current.pop()
-    return typeof idx === 'number' ? idx : 0
-  }
+    const names = results.map((r) => r!.name)
+    if (names.includes('Very Wet')) {
+      return 'Jeff: "Full wets ready. Brake earlier and watch for standing water."'
+    }
+    if (names.includes('Wet')) {
+      return 'Jeff: "Inters seem best. Expect it to be slippery through the middle sector."'
+    }
+    return 'Jeff: "Track looks bone dry. Box for slicks and push when you can."'
+  }, [results])
 
   return (
     <div className="w-full">
       <div className="text-center space-y-2 mb-8">
         <h2 className="text-3xl md:text-4xl font-semibold">Weather Choices</h2>
-        <p className="text-white/70 italic">Jeff: “Radar’s clear for now… rain in ten minutes. Probably.”</p>
+        <p className="text-white/70 italic">{quote}</p>
       </div>
       <div className="flex items-center justify-center gap-10 md:gap-14 flex-wrap">
-        <TyreReel ref={leftRef} size={260} />
-        <TyreReel ref={midRef} size={260} />
-        <TyreReel ref={rightRef} size={260} />
+        {reelRefs.map((ref, index) => (
+          <TyreReel key={index} ref={ref} size={260} />
+        ))}
       </div>
       <div className="mt-8 text-center">
         <button onClick={start} className="px-6 py-3 rounded-md bg-white/10 hover:bg-white/20 text-base">
