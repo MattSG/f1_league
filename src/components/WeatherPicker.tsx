@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { WEATHER } from '../lib/constants'
-import { pickRandom } from '../lib/random'
+import { pickRandom, shuffle } from '../lib/random'
 import TyreReel, { TyreReelHandle } from './TyreReel'
 
 type Result = { name: string; color: string } | null
@@ -10,12 +10,14 @@ export default function WeatherPicker() {
   const leftRef = useRef<TyreReelHandle>(null)
   const midRef = useRef<TyreReelHandle>(null)
   const rightRef = useRef<TyreReelHandle>(null)
+  // Use a shuffle bag to reduce streakiness and perceived bias while keeping equal probabilities
+  const bagRef = useRef<number[]>([])
 
   async function start() {
     setResults([null, null, null])
-    const r1 = pickRandom(WEATHER)
-    const r2 = pickRandom(WEATHER)
-    const r3 = pickRandom(WEATHER)
+    const r1 = WEATHER[drawFromBag()]
+    const r2 = WEATHER[drawFromBag()]
+    const r3 = WEATHER[drawFromBag()]
 
     const p1 = leftRef.current?.spinTo(r1, { startDelayMs: 0, durationMs: rand(1800, 2300) })
       ?.then(() => setResults((prev) => [r1, prev[1], prev[2]]))
@@ -29,6 +31,21 @@ export default function WeatherPicker() {
 
   function rand(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1)) + min
+  }
+
+  function refillBag(copies = 6) {
+    const idxs: number[] = []
+    for (let c = 0; c < copies; c++) {
+      for (let i = 0; i < WEATHER.length; i++) idxs.push(i)
+    }
+    bagRef.current = shuffle(idxs)
+  }
+
+  function drawFromBag(): number {
+    if (bagRef.current.length < 3) refillBag(6)
+    // Pop from the end for O(1)
+    const idx = bagRef.current.pop()
+    return typeof idx === 'number' ? idx : 0
   }
 
   return (

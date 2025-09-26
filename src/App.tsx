@@ -2,6 +2,7 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 
 export default function App() {
   const { pathname } = useLocation()
+  
   return (
     <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
       <header className="relative">

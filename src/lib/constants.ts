@@ -141,38 +141,31 @@ export function labelToShortName(label: string): string {
   return label
 }
 
-// Country -> ISO2 codes for flag rendering
-export const ISO_BY_COUNTRY: Record<string, string> = {
-  Bahrain: 'BH',
-  Italy: 'IT',
-  Portugal: 'PT',
-  Spain: 'ES',
-  Monaco: 'MC',
-  Azerbaijan: 'AZ',
-  France: 'FR',
-  Austria: 'AT',
-  'United Kingdom': 'GB',
-  Hungary: 'HU',
-  Belgium: 'BE',
-  Netherlands: 'NL',
-  Russia: 'RU',
-  Turkey: 'TR',
-  'United States': 'US',
-  Mexico: 'MX',
-  Brazil: 'BR',
-  Qatar: 'QA',
-  'Saudi Arabia': 'SA',
-  'United Arab Emirates': 'AE',
+// Country -> Emoji flag (no ISO/country codes)
+export const FLAG_BY_COUNTRY: Record<string, string> = {
+  Bahrain: '🇧🇭',
+  Italy: '🇮🇹',
+  Portugal: '🇵🇹',
+  Spain: '🇪🇸',
+  Monaco: '🇲🇨',
+  Azerbaijan: '🇦🇿',
+  France: '🇫🇷',
+  Austria: '🇦🇹',
+  'United Kingdom': '🇬🇧',
+  Hungary: '🇭🇺',
+  Belgium: '🇧🇪',
+  Netherlands: '🇳🇱',
+  Russia: '🇷🇺',
+  Turkey: '🇹🇷',
+  'United States': '🇺🇸',
+  Mexico: '🇲🇽',
+  Brazil: '🇧🇷',
+  Qatar: '🇶🇦',
+  'Saudi Arabia': '🇸🇦',
+  'United Arab Emirates': '🇦🇪',
 }
 
-function isoToFlag(_iso: string): string {
-  return ''
-}
-
-export function labelToFlag(_label: string): string {
-  return ''
-}
-
-export function labelToISO(_label: string): string {
-  return ''
+export function labelToFlag(label: string): string {
+  const country = labelToCountry(label)
+  return FLAG_BY_COUNTRY[country] ?? ''
 }

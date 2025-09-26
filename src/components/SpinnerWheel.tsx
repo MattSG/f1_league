@@ -79,7 +79,7 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
     })
   }
 
-  const size = 765
+  const size = 960
   const cx = size / 2
   const cy = size / 2
   const radiusOuter = Math.round(size * 0.46)
@@ -88,7 +88,7 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
   const rWedgeInner = Math.round(size * 0.18)
 
   return (
-    <div className="relative" style={{ width: 'min(96vw, 765px)', height: 'min(96vw, 765px)' }}>
+    <div className="relative" style={{ width: 'min(96vw, 960px)', height: 'min(96vw, 960px)' }}>
       <style>{`
         @keyframes pulseHalo { 0%{opacity:.14} 50%{opacity:.38} 100%{opacity:.14} }
       `}</style>
@@ -180,10 +180,12 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
             const flag = labelToFlag(fullForFlag)
             const maxChars = n > 18 ? 10 : 12
             const nameLines = wrapLabel(s.label, maxChars)
-            const lines = flag ? [flag, ...nameLines] : nameLines
-            let baseSize = 18
-            if (n > 18) baseSize = 16
-            if (n > 22) baseSize = 14
+            const lines = flag && nameLines.length
+              ? [flag + ' ' + nameLines[0], ...nameLines.slice(1)]
+              : nameLines
+            let baseSize = 20
+            if (n > 18) baseSize = 18
+            if (n > 22) baseSize = 16
             let fontSize = lines.length === 1 ? baseSize : lines.length === 2 ? baseSize - 1 : baseSize - 3
             if (selectedFinal) fontSize += 1
             const labelRadius = rWedgeInner + (rWedgeOuter - rWedgeInner) * 0.60

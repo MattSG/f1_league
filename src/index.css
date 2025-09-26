@@ -1,3 +1,6 @@
+/* Load Twemoji COLR webfont for consistent emoji across browsers */
+@import 'twemoji-colr-font/twemoji.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,7 +11,10 @@
 }
 
 /* Prefer emoji-capable fonts so flags render consistently */
-body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif; }
+/* Prefer one emoji font for consistency; let text fall back to system UI */
+/* Put Twemoji last so normal text (like the '1' in F1) uses system fonts,
+   and Twemoji is only used for emoji codepoints */
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, 'Twemoji', sans-serif; }
 
 /* Accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
