@@ -22,7 +22,7 @@ const VERDICTS: Verdict[] = [
     color: '#e10600',
     image: 'https://e0.365dm.com/16/11/768x432/skysports-rosberg-nico-f1-conclusions_3841470.jpg',
     blurb: 'Straight to jail.',
-    details: '“That was optimistic at best. Penalty stands.”',
+    details: '“10s penalty for Ocon”',
   },
 ]
 
