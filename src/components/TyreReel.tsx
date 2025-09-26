@@ -74,7 +74,7 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
 
             animateTo(target, duration).then(() => {
               setColor(result.color)
-              Promise.all([fadeTo(1, 520), fadeRainbowOutSmooth()]).finally(() => {
+              crossFadeRainbowToColor(580).finally(() => {
                 setSpinning(false)
                 resolve()
               })
@@ -107,19 +107,24 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
     })
   }
 
-  function fadeTo(target: number, duration: number) {
+  function crossFadeRainbowToColor(duration: number) {
     return new Promise<void>((resolve) => {
       const start = performance.now()
-      const from = fadeColor
-      const delta = target - from
+      const rainbowFrom = fadeRainbow
+      const colorFrom = fadeColor
       const step = (now: number) => {
         const t = Math.min(1, (now - start) / duration)
         const eased = easeOutCubic(t)
-        setFadeColor(from + delta * eased)
+        const nextRainbow = Math.max(0, rainbowFrom * (1 - eased))
+        const nextColor = colorFrom + (1 - colorFrom) * eased
+        setFadeRainbow(nextRainbow)
+        setFadeColor(nextColor)
         if (t < 1) {
           animRef.current = requestAnimationFrame(step)
         } else {
           animRef.current = null
+          setFadeRainbow(0)
+          setFadeColor(1)
           resolve()
         }
       }
@@ -147,12 +152,7 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
     })
   }
 
-  async function fadeRainbowOutSmooth() {
-    await fadeRainbowTo(0.75, 200)
-    await fadeRainbowTo(0.4, 260)
-    await fadeRainbowTo(0.12, 260)
-    await fadeRainbowTo(0, 320)
-  }
+
 
   const size = sizeProp ?? 240
   const cx = size / 2
@@ -162,6 +162,7 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
   const bandR = Math.round(size * 0.315)
   const bandW = Math.max(10, Math.round(size * 0.072))
   const bandHighlightWidth = Math.max(4, Math.round(bandW * 0.64))
+  const brandOffset = Math.max(2, Math.round(bandW * 0.2))
   const rimOuterR = Math.round(size * 0.205)
   const rimInnerR = Math.round(size * 0.165)
   const hubOuterR = Math.round(size * 0.09)
@@ -274,7 +275,7 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
             <g key={i} transform={`rotate(${i * 90} ${cx} ${cy})`}>
               <text
                 x={cx}
-                y={cy - bandR + Math.max(2, Math.round(bandW * 0.35))}
+                y={cy - bandR + brandOffset}
                 textAnchor="middle"
                 fontSize={Math.max(9, Math.round(size * 0.055))}
                 fill="#ffdf00"

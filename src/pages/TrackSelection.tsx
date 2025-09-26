@@ -100,7 +100,7 @@ export default function TrackSelection() {
       <ConfettiLayer ref={confettiRef} />
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-8">
         <div className="text-center space-y-2 mb-4">
-          <h1 className="text-3xl md:text-4xl font-semibold">Track Selection</h1>
+          <h1 className="f1-heading text-3xl md:text-4xl font-semibold">Track Selection</h1>
         </div>
         <div className="flex flex-col items-center">
           <div className="relative">
@@ -161,4 +161,3 @@ export default function TrackSelection() {
     </main>
   )
 }
-
