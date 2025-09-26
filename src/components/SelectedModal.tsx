@@ -3,7 +3,7 @@ import { labelToCountry, labelToShortName, labelToFlag } from '../lib/constants'
 
 type Props = {
   open: boolean
-  track?: { id: string; label: string } | null
+  track?: { id: string; label: string; fullLabel?: string; shortLabel?: string } | null
   onClose?: () => void
   onChooseWeather?: () => void
   onRespin?: () => void
@@ -17,9 +17,9 @@ export default function SelectedModal({ open, track, onClose, onChooseWeather, o
   }, [open])
 
   if (!open || !track) return null
-  const full = (track as any).fullLabel ?? track.label
+  const full = track.fullLabel ?? track.label
   const country = labelToCountry(full)
-  const short = labelToShortName(full)
+  const short = track.shortLabel ?? labelToShortName(full)
   const flag = labelToFlag(full)
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center">

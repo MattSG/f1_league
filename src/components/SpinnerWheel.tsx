@@ -2,7 +2,7 @@ import React, { useEffect, useImperativeHandle, useMemo, useRef, useState, forwa
 import { labelToFlag } from '../lib/constants'
 import { easeOutCubic } from '../lib/easing'
 
-type Segment = { id: string; label: string }
+type Segment = { id: string; label: string; fullLabel?: string; shortLabel?: string }
 
 export type SpinnerHandle = {
   spinTo: (index: number, opts?: { rotations?: number; durationMs?: number }) => Promise<void>
@@ -176,7 +176,7 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
             const selected = s.id === selectedId
             const selectedFinal = !spinning && selected
             const fill = selected ? '#242424' : i % 2 === 0 ? '#141414' : '#1b1b1b'
-            const fullForFlag = (s as any).fullLabel ?? s.label
+            const fullForFlag = s.fullLabel ?? s.label
             const flag = labelToFlag(fullForFlag)
             const maxChars = n > 18 ? 10 : 12
             const nameLines = wrapLabel(s.label, maxChars)

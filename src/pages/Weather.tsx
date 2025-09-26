@@ -1,7 +1,7 @@
 import MemeBackdrop from '../components/MemeBackdrop'
 import WeatherPicker from '../components/WeatherPicker'
 import { useEffect, useState } from 'react'
-import { labelToCountry, labelToFlag } from '../lib/constants'
+import { labelToCountry, labelToFlag, labelToShortName } from '../lib/constants'
 
 export default function Weather() {
   const [trackLabel, setTrackLabel] = useState<string | null>(null)
@@ -10,15 +10,28 @@ export default function Weather() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem('selectedTrack')
-      if (raw) {
-        const t = JSON.parse(raw)
-        if (t?.label && typeof t.label === 'string') setTrackLabel(t.label)
-        if (t?.fullLabel && typeof t.fullLabel === 'string') setTrackFull(t.fullLabel)
-      }
+      if (!raw) return
+      const data = JSON.parse(raw)
+      if (!data || typeof data !== 'object') return
+      const full = typeof data.fullLabel === 'string' && data.fullLabel.trim()
+        ? data.fullLabel
+        : typeof data.label === 'string' && data.label.trim()
+        ? data.label
+        : null
+      if (full) setTrackFull(full)
+      const short = typeof data.shortLabel === 'string' && data.shortLabel.trim()
+        ? data.shortLabel
+        : full
+        ? labelToShortName(full)
+        : null
+      if (short) setTrackLabel(short)
     } catch {}
   }, [])
-  const flag = labelToFlag((trackFull ?? trackLabel) ?? '')
-  const country = trackLabel ? labelToCountry((trackFull ?? trackLabel) ?? '') : ''
+
+  const metadataBasis = trackFull ?? trackLabel ?? ''
+  const flag = metadataBasis ? labelToFlag(metadataBasis) : ''
+  const country = metadataBasis ? labelToCountry(metadataBasis) : ''
+
   return (
     <main className="relative">
       <MemeBackdrop />

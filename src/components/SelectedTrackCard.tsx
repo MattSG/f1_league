@@ -1,15 +1,15 @@
 import { labelToCountry, labelToShortName, labelToFlag } from '../lib/constants'
 
 type Props = {
-  track?: { id: string; label: string } | null
+  track?: { id: string; label: string; fullLabel?: string; shortLabel?: string } | null
   onRespin?: () => void
 }
 
 export default function SelectedTrackCard({ track, onRespin }: Props) {
   if (!track) return null
-  const full = (track as any).fullLabel ?? track.label
+  const full = track.fullLabel ?? track.label
   const country = labelToCountry(full)
-  const short = labelToShortName(full)
+  const short = track.shortLabel ?? labelToShortName(full)
   const flag = labelToFlag(full)
   return (
     <div className="fixed top-20 right-4 z-20 bg-white/5 backdrop-blur rounded-lg border border-white/10 p-4 max-w-xs">
