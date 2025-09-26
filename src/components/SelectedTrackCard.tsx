@@ -1,7 +1,8 @@
 import { labelToCountry, labelToShortName, labelToFlag } from '../lib/constants'
+import type { TrackSegment } from '../lib/tracks'
 
 type Props = {
-  track?: { id: string; label: string; fullLabel?: string; shortLabel?: string } | null
+  track?: TrackSegment | null
   onRespin?: () => void
 }
 

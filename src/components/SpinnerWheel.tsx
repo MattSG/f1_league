@@ -1,17 +1,17 @@
 import React, { useEffect, useImperativeHandle, useMemo, useRef, useState, forwardRef } from 'react'
 import { labelToFlag } from '../lib/constants'
+import type { TrackSegment } from '../lib/tracks'
 import { easeOutCubic } from '../lib/easing'
 
-type Segment = { id: string; label: string; fullLabel?: string; shortLabel?: string }
 
 export type SpinnerHandle = {
   spinTo: (index: number, opts?: { rotations?: number; durationMs?: number }) => Promise<void>
 }
 
 type Props = {
-  segments: Segment[]
+  segments: TrackSegment[]
   selectedId?: string
-  onSettled?: (segment: Segment) => void
+  onSettled?: (segment: TrackSegment) => void
   spinning: boolean
 }
 
@@ -82,10 +82,10 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
   const size = 960
   const cx = size / 2
   const cy = size / 2
-  const radiusOuter = Math.round(size * 0.46)
-  const radiusBand = Math.round(size * 0.40)
-  const rWedgeOuter = Math.round(size * 0.37)
-  const rWedgeInner = Math.round(size * 0.18)
+  const radiusOuter = Math.round(size * 0.48)
+  const radiusBand = Math.round(size * 0.43)
+  const rWedgeOuter = Math.round(size * 0.395)
+  const rWedgeInner = Math.round(size * 0.16)
 
   return (
     <div className="relative" style={{ width: 'min(96vw, 960px)', height: 'min(96vw, 960px)' }}>
@@ -140,7 +140,7 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
           {/* Tyre tread */}
           <circle cx={cx} cy={cy} r={radiusOuter} fill="url(#tyreShade)" filter="url(#inset-shadow)" />
           {/* Soft band ring */}
-          <circle cx={cx} cy={cy} r={radiusBand} fill="none" stroke="#e10600" strokeWidth={28} />
+          <circle cx={cx} cy={cy} r={radiusBand} fill="none" stroke="#e10600" strokeWidth={32} />
           {/* Sidewall edge rings for realism */}
           <circle cx={cx} cy={cy} r={radiusOuter - 6} fill="none" stroke="#050505" strokeWidth={3} opacity={0.8} />
           <circle cx={cx} cy={cy} r={radiusBand - 16} fill="none" stroke="#0b0b0b" strokeWidth={3} opacity={0.8} />
@@ -311,3 +311,4 @@ function normalizeAngle(a: number) {
   if (x < 0) x += 360
   return x
 }
+

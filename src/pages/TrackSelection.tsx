@@ -5,23 +5,18 @@ import SelectedTrackCard from '../components/SelectedTrackCard'
 import MemeBackdrop from '../components/MemeBackdrop'
 import ConfettiLayer, { ConfettiHandle } from '../components/ConfettiLayer'
 import { fetchTracks } from '../lib/googleSheets'
-import { labelToShortName } from '../lib/constants'
+import { SELECTED_TRACK_STORAGE_KEY, toTrackSegment } from '../lib/tracks'
+import type { TrackSegment } from '../lib/tracks'
 import { secureRandomInt } from '../lib/random'
 import { Link, useNavigate } from 'react-router-dom'
 import SelectedModal from '../components/SelectedModal'
 
-type Segment = {
-  id: string
-  label: string
-  fullLabel?: string
-  shortLabel?: string
-}
 
 export default function TrackSelection() {
-  const [segments, setSegments] = useState<Segment[]>([])
+  const [segments, setSegments] = useState<TrackSegment[]>([])
   const [loadingTracks, setLoadingTracks] = useState(true)
   const [spinning, setSpinning] = useState(false)
-  const [selected, setSelected] = useState<Segment | null>(null)
+  const [selected, setSelected] = useState<TrackSegment | null>(null)
   const [readyForWeather, setReadyForWeather] = useState(false)
   const wheelRef = useRef<SpinnerHandle>(null)
   const confettiRef = useRef<ConfettiHandle>(null)
@@ -30,6 +25,8 @@ export default function TrackSelection() {
   const [hasSpun, setHasSpun] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
+  const disableSpin = loadingTracks || !segments.length
+  const showWeatherLink = readyForWeather && !loadingTracks
 
   useEffect(() => {
     let active = true
@@ -37,16 +34,7 @@ export default function TrackSelection() {
     fetchTracks()
       .then((tracks) => {
         if (!active) return
-        const mapped = tracks.map((t) => {
-          const short = labelToShortName(t.label)
-          return {
-            id: t.id,
-            label: short,
-            fullLabel: t.label,
-            shortLabel: short,
-          }
-        })
-        setSegments(mapped)
+        setSegments(tracks.map(toTrackSegment))
       })
       .catch((error) => {
         if (active) console.warn('Unable to hydrate tracks from sheet.', error)
@@ -60,17 +48,12 @@ export default function TrackSelection() {
   }, [])
 
   // Do not auto-restore a previous selection on refresh per request
-
   useEffect(() => {
-    if (selected) {
-      const snapshot = {
-        id: selected.id,
-        label: selected.label,
-        fullLabel: selected.fullLabel,
-        shortLabel: selected.shortLabel,
-      }
-      localStorage.setItem('selectedTrack', JSON.stringify(snapshot))
+    if (!selected) {
+      localStorage.removeItem(SELECTED_TRACK_STORAGE_KEY)
+      return
     }
+    localStorage.setItem(SELECTED_TRACK_STORAGE_KEY, JSON.stringify(selected))
   }, [selected])
 
   // When weather button becomes available, focus it and add a brief glow
@@ -84,7 +67,7 @@ export default function TrackSelection() {
   }, [readyForWeather])
 
   const handleSpin = async () => {
-    if (!segments.length || spinning || loadingTracks) return
+    if (disableSpin || spinning) return
     setReadyForWeather(false)
     setSpinning(true)
     setHasSpun(true)
@@ -105,7 +88,7 @@ export default function TrackSelection() {
 
   const handleRespin = () => {
     setSelected(null)
-    localStorage.removeItem('selectedTrack')
+    localStorage.removeItem(SELECTED_TRACK_STORAGE_KEY)
     setHasSpun(false)
     setReadyForWeather(false)
     setShowModal(false)
@@ -149,10 +132,10 @@ export default function TrackSelection() {
                 onClick={handleSpin}
                 loading={spinning}
                 aria-label="Spin the wheel"
-                disabled={loadingTracks || !segments.length}
+                disabled={disableSpin}
               />
             )}
-            {readyForWeather && !loadingTracks && (
+            {showWeatherLink && (
               <Link
                 to="/weather"
                 ref={chooseRef}
@@ -178,3 +161,4 @@ export default function TrackSelection() {
     </main>
   )
 }
+

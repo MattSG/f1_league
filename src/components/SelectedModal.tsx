@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { labelToCountry, labelToShortName, labelToFlag } from '../lib/constants'
+import type { TrackSegment } from '../lib/tracks'
 
 type Props = {
   open: boolean
-  track?: { id: string; label: string; fullLabel?: string; shortLabel?: string } | null
+  track?: TrackSegment | null
   onClose?: () => void
   onChooseWeather?: () => void
   onRespin?: () => void

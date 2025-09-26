@@ -1,34 +1,20 @@
 import MemeBackdrop from '../components/MemeBackdrop'
 import WeatherPicker from '../components/WeatherPicker'
 import { useEffect, useState } from 'react'
-import { labelToCountry, labelToFlag, labelToShortName } from '../lib/constants'
+import { labelToCountry, labelToFlag } from '../lib/constants'
+import { parseStoredTrack, SELECTED_TRACK_STORAGE_KEY } from '../lib/tracks'
+import type { TrackSegment } from '../lib/tracks'
 
 export default function Weather() {
-  const [trackLabel, setTrackLabel] = useState<string | null>(null)
-  const [trackFull, setTrackFull] = useState<string | null>(null)
+  const [segment, setSegment] = useState<TrackSegment | null>(null)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('selectedTrack')
-      if (!raw) return
-      const data = JSON.parse(raw)
-      if (!data || typeof data !== 'object') return
-      const full = typeof data.fullLabel === 'string' && data.fullLabel.trim()
-        ? data.fullLabel
-        : typeof data.label === 'string' && data.label.trim()
-        ? data.label
-        : null
-      if (full) setTrackFull(full)
-      const short = typeof data.shortLabel === 'string' && data.shortLabel.trim()
-        ? data.shortLabel
-        : full
-        ? labelToShortName(full)
-        : null
-      if (short) setTrackLabel(short)
-    } catch {}
+    const stored = parseStoredTrack(localStorage.getItem(SELECTED_TRACK_STORAGE_KEY))
+    if (stored) setSegment(stored)
   }, [])
 
-  const metadataBasis = trackFull ?? trackLabel ?? ''
+  const trackLabel = segment?.shortLabel ?? null
+  const metadataBasis = segment?.fullLabel ?? segment?.label ?? ''
   const flag = metadataBasis ? labelToFlag(metadataBasis) : ''
   const country = metadataBasis ? labelToCountry(metadataBasis) : ''
 
