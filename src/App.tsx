@@ -2,7 +2,11 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 
 export default function App() {
   const { pathname } = useLocation()
-  
+
+  const isTrack = pathname === '/' || pathname.startsWith('/track')
+  const isWeather = pathname.startsWith('/weather')
+  const isStewards = pathname.startsWith('/stewards')
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
       <header className="relative">
@@ -13,8 +17,36 @@ export default function App() {
             <span className="f1-wordmark text-xl font-extrabold">F1 League</span>
           </Link>
           <nav className="flex gap-2 text-xs uppercase">
-            <Link to="/track" className={`px-3 py-1.5 rounded border ${pathname === '/track' || pathname === '/' ? 'border-red-500 text-red-400' : 'border-white/10 text-white/70 hover:border-red-600/50 hover:text-red-300'}`}>Track Selection</Link>
-            <Link to="/weather" className={`px-3 py-1.5 rounded border ${pathname.startsWith('/weather') ? 'border-red-500 text-red-400' : 'border-white/10 text-white/70 hover:border-red-600/50 hover:text-red-300'}`}>Weather</Link>
+            <Link
+              to="/track"
+              className={`px-3 py-1.5 rounded border ${
+                isTrack
+                  ? 'border-red-500 text-red-400'
+                  : 'border-white/10 text-white/70 hover:border-red-600/50 hover:text-red-300'
+              }`}
+            >
+              Track Selection
+            </Link>
+            <Link
+              to="/weather"
+              className={`px-3 py-1.5 rounded border ${
+                isWeather
+                  ? 'border-red-500 text-red-400'
+                  : 'border-white/10 text-white/70 hover:border-red-600/50 hover:text-red-300'
+              }`}
+            >
+              Weather
+            </Link>
+            <Link
+              to="/stewards"
+              className={`px-3 py-1.5 rounded border ${
+                isStewards
+                  ? 'border-red-500 text-red-400'
+                  : 'border-white/10 text-white/70 hover:border-red-600/50 hover:text-red-300'
+              }`}
+            >
+              Stewards
+            </Link>
           </nav>
         </div>
       </header>

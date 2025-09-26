@@ -5,6 +5,7 @@ import './index.css'
 import App from './App'
 import TrackSelection from './pages/TrackSelection'
 import Weather from './pages/Weather'
+import Stewards from './pages/Stewards'
 
 const basename = import.meta.env.BASE_URL
 
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route index element={<TrackSelection />} />
           <Route path="track" element={<TrackSelection />} />
           <Route path="weather" element={<Weather />} />
+          <Route path="stewards" element={<Stewards />} />
         </Route>
       </Routes>
     </BrowserRouter>
