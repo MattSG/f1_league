@@ -21,9 +21,9 @@ export default function WeatherPicker() {
 
     const p1 = leftRef.current?.spinTo(r1, { startDelayMs: 0, durationMs: rand(1800, 2300) })
       ?.then(() => setResults((prev) => [r1, prev[1], prev[2]]))
-    const p2 = midRef.current?.spinTo(r2, { startDelayMs: 200, durationMs: rand(2400, 3000) })
+    const p2 = midRef.current?.spinTo(r2, { startDelayMs: 360, durationMs: rand(2400, 3000) })
       ?.then(() => setResults((prev) => [prev[0], r2, prev[2]]))
-    const p3 = rightRef.current?.spinTo(r3, { startDelayMs: 400, durationMs: rand(3000, 3600) })
+    const p3 = rightRef.current?.spinTo(r3, { startDelayMs: 720, durationMs: rand(3000, 3600) })
       ?.then(() => setResults((prev) => [prev[0], prev[1], r3]))
 
     await Promise.all([p1, p2, p3].filter(Boolean) as Promise<void>[])
