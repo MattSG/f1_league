@@ -26,34 +26,37 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, 'Twem
   }
 }
 .f1-wordmark {
-  font-family: 'Oswald', 'Impact', 'Arial Black', 'Titillium Web', sans-serif;
+  font-family: 'Titillium Web', 'Oswald', 'Arial Black', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.32em;
-  font-style: italic;
+  letter-spacing: 0.18em;
+  font-style: normal;
+  font-weight: 700;
   position: relative;
   display: inline-flex;
   align-items: center;
-  padding: 0.15rem 0.8rem 0.15rem 0.65rem;
+  padding: 0.1rem 0.75rem 0.1rem 0.6rem;
   overflow: hidden;
+  line-height: 1.05;
 }
 
 .f1-wordmark::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0));
-  transform: skewX(-18deg);
-  opacity: 0.18;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0));
+  transform: skewX(-14deg);
+  opacity: 0.12;
 }
 
 .f1-heading {
-  font-family: 'Oswald', 'Impact', 'Arial Black', 'Titillium Web', sans-serif;
+  font-family: 'Titillium Web', 'Oswald', 'Arial Black', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.45em;
-  font-style: italic;
+  letter-spacing: 0.28em;
+  font-style: normal;
   position: relative;
   display: inline-block;
-  padding-left: 1.15rem;
+  padding-left: 1rem;
+  line-height: 1.1;
 }
 
 .f1-heading::before {
@@ -61,10 +64,10 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, 'Twem
   position: absolute;
   left: 0;
   top: 50%;
-  transform: translateY(-50%) skewX(-18deg);
-  width: 0.55rem;
-  height: 120%;
-  background: linear-gradient(180deg, rgba(225, 6, 0, 0.9), rgba(225, 6, 0, 0.4));
-  box-shadow: 0 0 12px rgba(225, 6, 0, 0.55);
+  transform: translateY(-50%) skewX(-14deg);
+  width: 0.45rem;
+  height: 115%;
+  background: linear-gradient(180deg, rgba(225, 6, 0, 0.75), rgba(225, 6, 0, 0.3));
+  box-shadow: 0 0 10px rgba(225, 6, 0, 0.45);
   border-radius: 999px;
 }

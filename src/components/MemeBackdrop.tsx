@@ -136,17 +136,15 @@ export default function MemeBackdrop() {
         <div className="relative w-full h-full">
           {previous && (
             <div
-              className={`absolute inset-0 transition-opacity duration-[${FADE_DURATION_MS}ms] ease-out will-change-opacity ${
-                fadeState === 'prep' ? 'opacity-100' : 'opacity-0'
-              }`}
+              className="absolute inset-0 will-change-opacity"
+              style={{ opacity: fadeState === 'prep' ? 1 : 0, transition: `opacity ${FADE_DURATION_MS}ms ease-in-out` }}
             >
               <Grid quotes={QUOTE_SETS[previous.index]} baseIndex={previous.base} />
             </div>
           )}
           <div
-            className={`absolute inset-0 transition-opacity duration-[${FADE_DURATION_MS}ms] ease-out will-change-opacity ${
-              fadeState === 'prep' ? 'opacity-0' : 'opacity-100'
-            }`}
+            className="absolute inset-0 will-change-opacity"
+            style={{ opacity: fadeState === 'prep' ? 0 : 1, transition: `opacity ${FADE_DURATION_MS}ms ease-in-out` }}
           >
             <Grid quotes={QUOTE_SETS[current.index]} baseIndex={current.base} />
           </div>
