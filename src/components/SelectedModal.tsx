@@ -26,9 +26,11 @@ export default function SelectedModal({ open, track, onClose, onChooseWeather, o
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 w-[min(92vw,640px)] rounded-xl border border-white/10 bg-neutral-900/95 p-6 shadow-2xl">
         <div className="text-sm uppercase text-white/70">Track Selected</div>
-        <div className="mt-2 text-xs text-white/75 flex items-center gap-2" aria-label="Country flag">
-          <span aria-hidden>{flag}</span>
-        </div>
+        {flag && (
+          <div className="mt-2 text-xs text-white/75 flex items-center gap-2" aria-label="Country flag">
+            <span aria-hidden>{flag}</span>
+          </div>
+        )}
         <div className="mt-1 text-2xl md:text-3xl font-bold tracking-tight">{short}</div>
         <div className="text-white/70 mt-1">{country}</div>
         <div className="mt-5 flex flex-wrap items-center gap-3">

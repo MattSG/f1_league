@@ -1,4 +1,4 @@
-import emojiFlags from 'emoji-flags'
+ 
 
 export type CompoundName = 'Soft' | 'Medium' | 'Hard' | 'Intermediate' | 'Wet';
 
@@ -165,23 +165,14 @@ export const ISO_BY_COUNTRY: Record<string, string> = {
   'United Arab Emirates': 'AE',
 }
 
-function isoToFlag(iso: string): string {
-  if (!iso || iso.length !== 2) return ''
-  try {
-    const rec = (emojiFlags as any).countryCode?.(iso.toUpperCase())
-    if (rec?.emoji) return rec.emoji as string
-  } catch {}
-  const codePoints = [...iso.toUpperCase()].map((c) => 0x1f1e6 + (c.charCodeAt(0) - 65))
-  return String.fromCodePoint(...codePoints)
+function isoToFlag(_iso: string): string {
+  return ''
 }
 
-export function labelToFlag(label: string): string {
-  const country = labelToCountry(label)
-  const iso = ISO_BY_COUNTRY[country]
-  return iso ? isoToFlag(iso) : ''
+export function labelToFlag(_label: string): string {
+  return ''
 }
 
-export function labelToISO(label: string): string {
-  const country = labelToCountry(label)
-  return ISO_BY_COUNTRY[country] ?? ''
+export function labelToISO(_label: string): string {
+  return ''
 }

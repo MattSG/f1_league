@@ -17,6 +17,8 @@ export default function Weather() {
       }
     } catch {}
   }, [])
+  const flag = labelToFlag((trackFull ?? trackLabel) ?? '')
+  const country = trackLabel ? labelToCountry((trackFull ?? trackLabel) ?? '') : ''
   return (
     <main className="relative">
       <MemeBackdrop />
@@ -27,8 +29,8 @@ export default function Weather() {
               <div className="text-sm opacity-70">Selected track</div>
               <div className="text-lg font-semibold leading-tight">{trackLabel}</div>
               <div className="text-xs opacity-80 flex items-center gap-1">
-                <span aria-hidden>{labelToFlag(trackFull ?? trackLabel)}</span>
-                <span className="opacity-70">- {labelToCountry(trackFull ?? trackLabel)}</span>
+                {flag && <span aria-hidden>{flag}</span>}
+                <span className="opacity-70">{flag ? '- ' : ''}{country}</span>
               </div>
             </div>
           )}
