@@ -8,16 +8,27 @@ import React, {
 } from 'react'
 import { easeOutCubic } from '../lib/easing'
 
+export type TyreReelResult = {
+  name: string
+  color: string
+}
+
 export type TyreReelHandle = {
   spinTo: (
-    result: { name: string; color: string },
+    result: TyreReelResult,
     opts?: { durationMs?: number; startDelayMs?: number }
   ) => Promise<void>
 }
 
-type Props = { size?: number }
+type Props = {
+  size?: number
+  onReveal?: (result: TyreReelResult) => void
+}
 
-const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: sizeProp }, ref) {
+const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel(
+  { size: sizeProp, onReveal },
+  ref
+) {
   const [rotation, setRotation] = useState(0)
   const [color, setColor] = useState<string>('transparent')
   const [spinning, setSpinning] = useState(false)
@@ -65,6 +76,7 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
               setColor(result.color)
               setFadeRainbow(0)
               setFadeColor(1)
+              onReveal?.(result)
               setSpinning(false)
               resolve()
               return
@@ -74,6 +86,7 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
 
             animateTo(target, duration).then(() => {
               setColor(result.color)
+              onReveal?.(result)
               crossFadeRainbowToColor(580).finally(() => {
                 setSpinning(false)
                 resolve()
@@ -83,7 +96,7 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
         })
       },
     }),
-    [rotation]
+    [rotation, onReveal]
   )
 
   function animateTo(target: number, duration: number) {
@@ -151,8 +164,6 @@ const TyreReel = forwardRef<TyreReelHandle, Props>(function TyreReel({ size: siz
       animRef.current = requestAnimationFrame(step)
     })
   }
-
-
 
   const size = sizeProp ?? 240
   const cx = size / 2
