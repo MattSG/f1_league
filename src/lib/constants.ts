@@ -19,7 +19,7 @@ export type Track = { id: string; label: string; details?: string }
 const TRACK_DATA: TrackRecord[] = [
   { id: 'bahrain', track: 'Bahrain', country: 'Bahrain' },
   { id: 'imola', track: 'Imola', country: 'Italy' },
-  { id: 'portimao', track: 'Portimão', country: 'Portugal' },
+  { id: 'portimao', track: 'Portimao', country: 'Portugal' },
   { id: 'barcelona', track: 'Barcelona', country: 'Spain' },
   { id: 'monaco', track: 'Monaco', country: 'Monaco' },
   { id: 'baku', track: 'Baku', country: 'Azerbaijan' },
