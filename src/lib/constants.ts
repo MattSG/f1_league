@@ -8,45 +8,204 @@ export const COMPOUNDS: { name: CompoundName; color: string }[] = [
   { name: 'Wet', color: '#00A3E0' },
 ]
 
- type TrackRecord = {
+type TrackRecord = {
   id: string
   track: string
+  shortName: string
   country: string
+  details: string
 }
 
 export type Track = { id: string; label: string; details?: string }
 
 const TRACK_DATA: TrackRecord[] = [
-  { id: 'bahrain', track: 'Bahrain', country: 'Bahrain' },
-  { id: 'imola', track: 'Imola', country: 'Italy' },
-  { id: 'portimao', track: 'Portimao', country: 'Portugal' },
-  { id: 'barcelona', track: 'Barcelona', country: 'Spain' },
-  { id: 'monaco', track: 'Monaco', country: 'Monaco' },
-  { id: 'baku', track: 'Baku', country: 'Azerbaijan' },
-  { id: 'paul-ricard', track: 'Paul Ricard', country: 'France' },
-  { id: 'austria', track: 'Austria', country: 'Austria' },
-  { id: 'silverstone', track: 'Silverstone', country: 'United Kingdom' },
-  { id: 'hungaroring', track: 'Hungaroring', country: 'Hungary' },
-  { id: 'spa', track: 'Spa', country: 'Belgium' },
-  { id: 'zandvoort', track: 'Zandvoort', country: 'Netherlands' },
-  { id: 'monza', track: 'Monza', country: 'Italy' },
-  { id: 'sochi', track: 'Sochi', country: 'Russia' },
-  { id: 'austin', track: 'Austin', country: 'USA' },
-  { id: 'mexico-city', track: 'Mexico City', country: 'Mexico' },
-  { id: 'interlagos', track: 'Interlagos', country: 'Brazil' },
-  { id: 'jeddah', track: 'Jeddah', country: 'Saudi Arabia' },
-  { id: 'abu-dhabi', track: 'Abu Dhabi', country: 'Abu Dhabi' },
+  {
+    id: 'bahrain',
+    track: 'F1 2021 Bahrain GP',
+    shortName: 'Bahrain',
+    country: 'Bahrain',
+    details: 'Bahrain International Circuit, Sakhir',
+  },
+  {
+    id: 'imola',
+    track: 'F1 2021 Imola GP',
+    shortName: 'Imola',
+    country: 'Italy',
+    details: 'Autodromo Enzo e Dino Ferrari, Imola',
+  },
+  {
+    id: 'portugal',
+    track: 'F1 2021 Portuguese GP',
+    shortName: 'Portimao',
+    country: 'Portugal',
+    details: 'Autodromo Internacional do Algarve, Portimao',
+  },
+  {
+    id: 'spain',
+    track: 'F1 2021 Spanish GP',
+    shortName: 'Barcelona',
+    country: 'Spain',
+    details: 'Circuit de Barcelona-Catalunya, Barcelona',
+  },
+  {
+    id: 'monaco',
+    track: 'F1 2021 Monaco GP',
+    shortName: 'Monaco',
+    country: 'Monaco',
+    details: 'Circuit de Monaco, Monte Carlo',
+  },
+  {
+    id: 'azerbaijan',
+    track: 'F1 2021 Azerbaijan GP',
+    shortName: 'Baku',
+    country: 'Azerbaijan',
+    details: 'Baku City Circuit, Baku',
+  },
+  {
+    id: 'france',
+    track: 'F1 2021 French GP',
+    shortName: 'Paul Ricard',
+    country: 'France',
+    details: 'Circuit Paul Ricard, France',
+  },
+  {
+    id: 'austria',
+    track: 'F1 2021 Austrian GP',
+    shortName: 'Red Bull Ring',
+    country: 'Austria',
+    details: 'Red Bull Ring, Spielberg',
+  },
+  {
+    id: 'greatbritain',
+    track: 'F1 2021 British GP',
+    shortName: 'Silverstone',
+    country: 'United Kingdom',
+    details: 'Silverstone Circuit, Silverstone',
+  },
+  {
+    id: 'hungary',
+    track: 'F1 2021 Hungarian GP',
+    shortName: 'Hungaroring',
+    country: 'Hungary',
+    details: 'Hungaroring, Budapest',
+  },
+  {
+    id: 'belgium',
+    track: 'F1 2021 Belgium GP',
+    shortName: 'Spa',
+    country: 'Belgium',
+    details: 'Spa Francorchamps, Belgium',
+  },
+  {
+    id: 'netherlands',
+    track: 'F1 2021 Dutch GP',
+    shortName: 'Zandvoort',
+    country: 'Netherlands',
+    details: 'Circuit Zandvoort, Zandvoort',
+  },
+  {
+    id: 'italy',
+    track: 'F1 2021 Italian GP',
+    shortName: 'Monza',
+    country: 'Italy',
+    details: 'Autodromo Nazionale Monza, Monza',
+  },
+  {
+    id: 'russia',
+    track: 'F1 2021 Russian GP',
+    shortName: 'Sochi',
+    country: 'Russia',
+    details: 'Sochi Autodrom, Sochi',
+  },
+  {
+    id: 'japan',
+    track: 'F1 2021 Japanese GP',
+    shortName: 'Suzuka',
+    country: 'Japan',
+    details: 'Suzuka International Racing Course, Suzuka',
+  },
+  {
+    id: 'usa',
+    track: 'F1 2021 United States GP',
+    shortName: 'Austin',
+    country: 'United States',
+    details: 'Circuit of the Americas, Austin Texas',
+  },
+  {
+    id: 'mexico',
+    track: 'F1 2021 Mexican GP',
+    shortName: 'Mexico City',
+    country: 'Mexico',
+    details: 'Autodromo Hermanos Rodriguez, Mexico City',
+  },
+  {
+    id: 'brazil',
+    track: 'F1 2021 Brazilian GP',
+    shortName: 'Interlagos',
+    country: 'Brazil',
+    details: 'Autodromo Jose Carlos Pace, Sao Paulo',
+  },
+  {
+    id: 'australia',
+    track: 'F1 2021 Australian GP',
+    shortName: 'Melbourne',
+    country: 'Australia',
+    details: 'Melbourne Grand Prix Circuit, Melbourne',
+  },
+  {
+    id: 'saudiarabia',
+    track: 'F1 2021 Saudi Arabian GP',
+    shortName: 'Jeddah',
+    country: 'Saudi Arabia',
+    details: 'Jeddah Street Circuit, Saudi Arabia',
+  },
+  {
+    id: 'abudhabi',
+    track: 'F1 2021 Abu Dhabi GP',
+    shortName: 'Yas Marina',
+    country: 'United Arab Emirates',
+    details: 'Yas Marina Circuit, Abu Dhabi',
+  },
+  {
+    id: 'canada',
+    track: 'F1 2021 Canadian GP',
+    shortName: 'Montreal',
+    country: 'Canada',
+    details: 'Circuit Gilles Villeneuve, Montreal',
+  },
+  {
+    id: 'china',
+    track: 'F1 2021 Chinese GP',
+    shortName: 'Shanghai',
+    country: 'China',
+    details: 'Shanghai International Circuit, Shanghai',
+  },
+  {
+    id: 'singapore',
+    track: 'F1 2021 Singapore GP',
+    shortName: 'Singapore',
+    country: 'Singapore',
+    details: 'Marina Bay Street Circuit, Singapore',
+  },
 ]
 
 export const FALLBACK_TRACKS: string[] = TRACK_DATA.map((item) => item.track)
 
+const assign = (target: Record<string, string>, key: string, value: string) => {
+  target[key] = value
+}
+
 export const COUNTRY_BY_TRACK: Record<string, string> = TRACK_DATA.reduce((acc, item) => {
-  acc[item.track] = item.country
+  assign(acc, item.track, item.country)
+  assign(acc, item.shortName, item.country)
+  assign(acc, item.id, item.country)
   return acc
 }, {} as Record<string, string>)
 
 export const SHORTNAME_BY_TRACK: Record<string, string> = TRACK_DATA.reduce((acc, item) => {
-  acc[item.track] = item.track
+  assign(acc, item.track, item.shortName)
+  assign(acc, item.shortName, item.shortName)
+  assign(acc, item.id, item.shortName)
   return acc
 }, {} as Record<string, string>)
 
@@ -64,11 +223,16 @@ export const FLAG_BY_COUNTRY: Record<string, string> = {
   Belgium: '🇧🇪',
   Netherlands: '🇳🇱',
   Russia: '🇷🇺',
-  USA: '🇺🇸',
+  Japan: '🇯🇵',
+  'United States': '🇺🇸',
   Mexico: '🇲🇽',
   Brazil: '🇧🇷',
+  Australia: '🇦🇺',
   'Saudi Arabia': '🇸🇦',
-  'Abu Dhabi': '🇦🇪',
+  'United Arab Emirates': '🇦🇪',
+  Canada: '🇨🇦',
+  China: '🇨🇳',
+  Singapore: '🇸🇬',
 }
 
 export const WEATHER: { name: 'Dry' | 'Wet' | 'Very Wet'; color: string }[] = [
