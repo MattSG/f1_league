@@ -16,7 +16,7 @@ type TrackRecord = {
   details: string
 }
 
-export type Track = { id: string; label: string; details?: string }
+export type Track = { id: string; label: string; details?: string; disabled?: boolean }
 
 const TRACK_DATA: TrackRecord[] = [
   {

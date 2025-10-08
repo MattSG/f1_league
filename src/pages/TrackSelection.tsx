@@ -25,7 +25,7 @@ export default function TrackSelection() {
   const [hasSpun, setHasSpun] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
-  const disableSpin = loadingTracks || !segments.length
+  const disableSpin = loadingTracks || !segments.some((segment) => !segment.disabled)
   const showWeatherLink = readyForWeather && !loadingTracks
 
   useEffect(() => {
@@ -71,7 +71,15 @@ export default function TrackSelection() {
     setReadyForWeather(false)
     setSpinning(true)
     setHasSpun(true)
-    const index = secureRandomInt(segments.length)
+    const enabledIndices = segments.reduce<number[]>((acc, segment, index) => {
+      if (!segment.disabled) acc.push(index)
+      return acc
+    }, [])
+    if (!enabledIndices.length) {
+      setSpinning(false)
+      return
+    }
+    const index = enabledIndices[secureRandomInt(enabledIndices.length)]
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
       setSelected(segments[index])

@@ -12,16 +12,15 @@ export async function fetchTracks(): Promise<Track[]> {
   try {
     const csv = await fetchCsvWithTimeout(SHEET_CSV_URL, FETCH_TIMEOUT_MS)
     const raced = extractRacedTrackNames(csv)
-    const filtered = FALLBACK_TRACKS.filter((label) => {
+    return FALLBACK_TRACKS.map((label) => {
       const normalizedFull = normalizeForComparison(label)
       const normalizedShort = normalizeForComparison(labelToShortName(label))
-      return !raced.has(normalizedFull) && !raced.has(normalizedShort)
+      const disabled = raced.has(normalizedFull) || raced.has(normalizedShort)
+      return { id: label, label, disabled }
     })
-    const source = filtered.length ? filtered : FALLBACK_TRACKS
-    return source.map((label) => ({ id: label, label }))
   } catch (error) {
     console.warn('Failed to read Google Sheet data, using full track list.', error)
-    return FALLBACK_TRACKS.map((label) => ({ id: label, label }))
+    return FALLBACK_TRACKS.map((label) => ({ id: label, label, disabled: false }))
   }
 }
 

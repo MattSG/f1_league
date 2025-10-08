@@ -6,6 +6,7 @@ export type TrackSegment = {
   label: string
   fullLabel: string
   shortLabel: string
+  disabled: boolean
 }
 
 export const SELECTED_TRACK_STORAGE_KEY = 'selectedTrack'
@@ -14,7 +15,8 @@ export function toTrackSegment(track: Track): TrackSegment {
   const fullLabel = track.label.trim()
   const shortLabel = labelToShortName(fullLabel)
   const id = track.id ?? fullLabel
-  return { id, label: shortLabel, fullLabel, shortLabel }
+  const disabled = Boolean(track.disabled)
+  return { id, label: shortLabel, fullLabel, shortLabel, disabled }
 }
 
 type MaybeSegment = Partial<Record<keyof TrackSegment, unknown>>
@@ -28,7 +30,8 @@ export function parseStoredTrack(raw: string | null): TrackSegment | null {
     if (!fullLabel) return null
     const shortLabel = pickShortLabel(parsed, fullLabel)
     const id = typeof parsed.id === 'string' && parsed.id.trim().length ? parsed.id : fullLabel
-    return { id, label: shortLabel, fullLabel, shortLabel }
+    const disabled = typeof parsed.disabled === 'boolean' ? parsed.disabled : false
+    return { id, label: shortLabel, fullLabel, shortLabel, disabled }
   } catch {
     return null
   }

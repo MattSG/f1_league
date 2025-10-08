@@ -247,8 +247,10 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
             const path = describeWedge(cx, cy, rWedgeOuter, rWedgeInner, a0, a1)
             const selected = s.id === selectedId
             const selectedFinal = !spinning && selected
+            const disabled = Boolean(s.disabled)
             const baseAlt = i % 2 === 0 ? '#161616' : '#1d1d1d'
-            const fill = selected ? '#252525' : baseAlt
+            const disabledFill = i % 2 === 0 ? '#2f1a1a' : '#361d1d'
+            const fill = selected ? '#252525' : disabled ? disabledFill : baseAlt
             const fullForFlag = s.fullLabel ?? s.label
             const flag = labelToFlag(fullForFlag)
             const maxChars = n > 18 ? 10 : 12
@@ -271,6 +273,8 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
             const pulseInner = Math.max(rWedgeInner - Math.round(size * 0.012), 12)
             const pulsePath = describeWedge(cx, cy, pulseOuter, pulseInner, a0, a1)
             const clipId = `${uid}-wedge-clip-${i}`
+            const textColor = disabled ? '#b6aaaa' : selected ? '#ffdf00' : '#ffffff'
+            const textOpacity = disabled ? 0.7 : 0.98
             return (
               <g key={s.id}>
                 <defs>
@@ -278,14 +282,14 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
                     <path d={describeWedge(cx, cy, rWedgeOuter, rWedgeInner, a0, a1)} />
                   </clipPath>
                 </defs>
-                <path d={path} fill={fill} stroke="#000" strokeOpacity={0.35} />
-                {spinning && i === activeIndex && (
+                <path d={path} fill={fill} stroke="#000" strokeOpacity={disabled ? 0.18 : 0.35} />
+                {spinning && i === activeIndex && !disabled && (
                   <g clipPath={`url(#${clipId})`}>
                     <path d={path} fill="#ffdf00" opacity={0.15} filter={`url(#${glowYellowId})`} />
                     <path d={path} fill="none" stroke="#ffdf00" strokeOpacity={0.5} strokeWidth={2} />
                   </g>
                 )}
-                {selectedFinal && (
+                {selectedFinal && !disabled && (
                   <g clipPath={`url(#${clipId})`}>
                     <path
                       d={pulsePath}
@@ -311,11 +315,17 @@ const SpinnerWheel = forwardRef<SpinnerHandle, Props>(function SpinnerWheel(
                     textAnchor="middle"
                     dominantBaseline="middle"
                     fontSize={fontSize}
-                    fill={selected ? '#ffdf00' : '#ffffff'}
-                    opacity={0.98}
+                    fill={textColor}
+                    opacity={textOpacity}
+                    style={disabled ? { textDecoration: 'line-through' } : undefined}
                   >
                     {lines.map((ln, li) => (
-                      <tspan key={li} x={pos.x} dy={li === 0 ? 0 : lineGap}>
+                      <tspan
+                        key={li}
+                        x={pos.x}
+                        dy={li === 0 ? 0 : lineGap}
+                        style={disabled ? { textDecoration: 'line-through' } : undefined}
+                      >
                         {ln}
                       </tspan>
                     ))}
