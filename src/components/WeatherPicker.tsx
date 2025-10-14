@@ -37,10 +37,14 @@ export default function WeatherPicker() {
   }
 
   function buildWeatherSet() {
-    const dry = WEATHER.find((w) => w.name === 'Dry')!
-    const wetPool = WEATHER.filter((w) => w.name !== 'Dry')
-    const picks = [dry, pickOne(wetPool), pickOne(WEATHER)]
-    return shuffle(picks)
+    while (true) {
+      const picks = Array.from({ length: WHEEL_COUNT }, () => pickOne(WEATHER))
+      const hasDry = picks.some((weather) => weather.name === 'Dry')
+      const hasWetType = picks.some((weather) => weather.name !== 'Dry')
+      if (hasDry && hasWetType) {
+        return picks
+      }
+    }
   }
 
   function pickOne<T>(list: readonly T[]): T {
