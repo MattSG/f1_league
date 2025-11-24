@@ -10,6 +10,7 @@ import type { TrackSegment } from '../lib/tracks'
 import { secureRandomInt } from '../lib/random'
 import { Link, useNavigate } from 'react-router-dom'
 import SelectedModal from '../components/SelectedModal'
+import ErrorOverlay from '../components/ErrorOverlay'
 
 
 export default function TrackSelection() {
@@ -24,6 +25,7 @@ export default function TrackSelection() {
   const [glowChoose, setGlowChoose] = useState(false)
   const [hasSpun, setHasSpun] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [showError, setShowError] = useState(false)
   const navigate = useNavigate()
   const disableSpin = loadingTracks || !segments.length
   const showWeatherLink = readyForWeather && !loadingTracks
@@ -71,16 +73,49 @@ export default function TrackSelection() {
     setReadyForWeather(false)
     setSpinning(true)
     setHasSpun(true)
-    const index = secureRandomInt(segments.length)
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduce) {
-      setSelected(segments[index])
-      setShowModal(true)
+
+    // Check for Nov 26th
+    const today = new Date()
+    const isNov26 = today.getMonth() === 10 && today.getDate() === 26 // Month is 0-indexed (10 = Nov)
+
+    if (isNov26) {
+      // Trigger the "error" sequence
+      setShowError(true)
+      await new Promise((resolve) => setTimeout(resolve, 5000))
+      setShowError(false)
+
+      // Replace tracks with Monaco (approx 20 entries for visuals)
+      const monaco = toTrackSegment({ id: 'Circuit de Monaco (Monaco GP)', label: 'Circuit de Monaco (Monaco GP)' })
+      const newSegments = Array(20).fill(monaco).map((m, i) => ({ ...m, id: `${m.id}-${i}` }))
+      setSegments(newSegments)
+
+      // Force a small delay to ensure the wheel updates before spinning
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      const index = 0 // Monaco is the only one
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce) {
+        setSelected(newSegments[index])
+        setShowModal(true)
+      } else {
+        await wheelRef.current?.spinTo(index)
+        setSelected(newSegments[index])
+        confettiRef.current?.burst()
+        setShowModal(true)
+      }
     } else {
-      await wheelRef.current?.spinTo(index)
-      setSelected(segments[index])
-      confettiRef.current?.burst()
-      setShowModal(true)
+      // Normal Spin Logic
+      const index = secureRandomInt(segments.length)
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce) {
+        setSelected(segments[index])
+        setShowModal(true)
+      } else {
+        await wheelRef.current?.spinTo(index)
+        setSelected(segments[index])
+        confettiRef.current?.burst()
+        setShowModal(true)
+      }
     }
     setTimeout(() => setReadyForWeather(true), 1500)
     setSpinning(false)
@@ -96,6 +131,7 @@ export default function TrackSelection() {
 
   return (
     <main className="relative">
+      <ErrorOverlay visible={showError} />
       <MemeBackdrop />
       <ConfettiLayer ref={confettiRef} />
       <div className="relative z-10 mx-auto max-w-6xl px-4 py-8">
